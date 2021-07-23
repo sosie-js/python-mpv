@@ -1,10 +1,11 @@
 .. vim: tw=120 sw=4 et
 
-python-mpv
-==========
+python-mpv-vapoursynth-preview
+=============================
 
-python-mpv is a ctypes-based python interface to the mpv media player. It gives you more or less full control of all
+python-mpv-vapoursynth-preview is a ctypes-based python interface to the mpv media player. It gives you more or less full control of all
 features of the player, just as the lua interface does.
+IT IS AN ATTEMPT to add vapoursynth preview from python using mpv.
 
 Installation
 ------------
@@ -16,8 +17,20 @@ Installation
 
 ...though you can also realistically just copy `mpv.py`_ into your project as it's all nicely contained in one file.
 
+Then try different ways to render vapoursynth using mpv, version.vpy script serves as test.
+*version_mpv    : Direct (mpv version.vpy)
+*version_vspipe : Feeded by vspipe (vspipe version.vpy - --y4m | mpv -) 
+*version_pympv  : Pythonic ways, render nothing when failsafe is False in vspreview/main.py:          python3 run.py version.py
+
+
 Requirements
 ~~~~~~~~~~~~
+
+vapoursynth
+------------
+
+  see particularly how to build mpv with vapoursynth support
+
 
 libmpv
 ......

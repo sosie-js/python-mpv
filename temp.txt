@@ -1,0 +1,12 @@
+Cannot find main.* for any supported scripting backend in: /home/james/.config/mpv/scripts/mobdebug
+Auto-loading profile 'extension.vpy'
+ (+) Video --vid=1 (wrapped_avframe 640x480)
+[vo/gpu/opengl] Suspected software renderer or indirect context.
+[vo/vdpau] VDPAU is most likely emulated via VA-API.
+[vo/vdpau] This is inefficient. Use --vo=gpu instead.
+[vo/vdpau] Warning: this compatibility VO is low quality and may have issues with OSD, scaling, screenshots and more.
+[vo/vdpau] vo=gpu is the preferred choice in any case and includes VDPAU support via hwdec=vdpau or vdpau-copy.
+VO: [vdpau] 640x480 yuv420p
+[vo/vdpau] Compositing window manager detected. Assuming timing info is inaccurate.
+
+Exiting... (Quit)
