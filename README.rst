@@ -18,18 +18,39 @@ Installation
 ...though you can also realistically just copy `mpv.py`_ into your project as it's all nicely contained in one file.
 
 Then try different ways to render vapoursynth using mpv, version.vpy script serves as test.
-*version_mpv    : Direct (mpv version.vpy)
-*version_vspipe : Feeded by vspipe (vspipe version.vpy - --y4m | mpv -) 
-*version_pympv  : Pythonic ways, render nothing when failsafe is False in vspreview/main.py:          python3 run.py version.py
+and run.py as command wrapper for vsprewiew
+
+Most of the case it is equivalent to 
+    python3 run.py <backend> version.py
+
+where <backend> is one of
+
+-shell based:
+*mpv      : wrapper script that allows vapoursynth to be recognized (quivalent to mpv --demuxer-lavf-format=vapoursynth version.vpy)
+*vspipe   : Feeded by vspipe (equivalent to vspipe version.vpy - --y4m | mpv --demuxer-lavf-format=vapoursynth -) 
+
+-python subprocess wrapped:
+*pympv    : add the required filter bridge to ffmpeg so mpv can render vpy nicefully (pythonic equivalent
+of backend mpv)
+
+-python libmpv wrapped:
+*pylibmpv    : renders nothing, blocks somewhere, bad boy
+*pyvspipempv : combined with vspipe ,renders with libmpv (works!)
+
 
 
 Requirements
 ~~~~~~~~~~~~
 
+  python-mpv original author help (For sure, Got sei Danke, Herrn neinseg oder jaseg :p!)
+
 vapoursynth
 ------------
 
-  see particularly how to build mpv with vapoursynth support
+  see particularly how to build mpv with vapoursynth support . You will surely have to
+ compile mpv on your own as vapoursynth integration is most of the time not included
+  either in ffmpeg / mpv linux distributions. A good start is SVP Linux documentation. 
+   Good luck !
 
 
 libmpv

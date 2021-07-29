@@ -1,1 +1,8 @@
-mpv version.vpy
+script_path="version.vpy"
+
+if [[ $script_path == *.vpy ]] 
+then
+	mpv  --demuxer-lavf-format=vapoursynth $script_path
+else
+	mpv $script_path
+fi

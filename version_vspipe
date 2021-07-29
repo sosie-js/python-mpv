@@ -1,1 +1,1 @@
-vspipe version.vpy - --y4m | mpv -
+vspipe  --arg key=value  version.vpy - --y4m | mpv -

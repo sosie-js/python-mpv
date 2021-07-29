@@ -1,1 +1,1 @@
-python3 run.py $1 
+python3 run.py $1 $2 -a key=value

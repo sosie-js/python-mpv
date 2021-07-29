@@ -5,7 +5,7 @@ from   pathlib  import * #Path
 import sys
 
 import vapoursynth as     vs
-import mpv
+
 #from vspreviewMPV.bridge import mpv
 
 
@@ -19,6 +19,9 @@ def main() -> None:
     check_versions()
 
     parser = ArgumentParser()
+
+    parser.add_argument('backend', help='Backend to use',
+                        type=Path, nargs='?')
     parser.add_argument('script_path', help='Path to Vapoursynth script',
                         type=Path, nargs='?')
     parser.add_argument('-a', '--external-args', type=str,
@@ -37,28 +40,53 @@ def main() -> None:
    #convert pathlib.PosixPath to str so  script_path.encode() will work
     script_path=str(script_path)
 
-    #Se to False if you dare to debug the issue (Any help is welcomed)    
-    failsafe= True
-
-    if(failsafe):
+    backend=str(args.backend)
+    print("Using backend '"+backend + "' for playing '"+script_path+"'")
+    
+    if(backend == 'pympv'):
         # this works but does not use mpv.py (libmpv from python)
         import subprocess
         temp_file = open("temp.txt",'w')
-        subprocess.call(['/usr/local/bin/mpv', script_path], stdout=temp_file)
+        proc=['/usr/local/bin/mpv']
+        if script_path.endswith('.vpy'):
+            proc.append('--demuxer-lavf-format=vapoursynth')
+        proc.append(script_path)
+        subprocess.call(proc, stdout=temp_file)
         with open("temp.txt",'r') as file:
            output = file.read()
         print(output)
-    else:
-        # this should work, but nothing happen !
+    elif(backend=='pylibmpv') :
+        import mpv
         try:
-            player = mpv.MPV(config=True)
-            player.play("file:/"+script_path)
+            #config=True,
+            player = mpv.MPV(vo='x11', handler=print, loglevel='debug')
+            #player.play("file://"+script_path) # FAILS unrecognized file format (reason 4), even if config is set
+            player.loadfile(script_path, demuxer_lavf_format='vapoursynth')
             player.wait_for_playback()
         except NameError as err:
             print("Name error: {0}".format(err))
         except: # catch *all* exceptions
             e = sys.exc_info()[0]
             logging.error( "<p>Player Error: %s</p>" % e )
+    elif(backend=='pyvspipempv') :
+        import mpv
+        import subprocess
+
+        player = mpv.MPV(config=True)
+        @player.python_stream('foo')
+        def reader():
+	        with open('log.txt', 'ab+') as out:
+		        p = subprocess.Popen(['/usr/bin/vspipe '+script_path+' -  --y4m' ], shell=True, stdout=subprocess.PIPE)
+		        std_out, std_error = p.communicate()
+	        # Write to the file
+	        if std_error:
+		        out.write( std_error )
+	        yield std_out
+
+        player.play('python://foo')
+        player.wait_for_playback()
+    print("Done")
+
 """
     
 """

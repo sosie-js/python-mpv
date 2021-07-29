@@ -1,0 +1,2 @@
+#Will use 'libmpv.so.1' on linux to interact with mpv
+python3 run.py pylibmpv version.vpy
