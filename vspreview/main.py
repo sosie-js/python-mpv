@@ -57,9 +57,12 @@ def main() -> None:
         print(output)
     elif(backend=='pylibmpv') :
         import mpv
+        import functools
+        import sys
+        import pickle
         try:
             #config=True,
-            player = mpv.MPV(vo='x11', handler=print, loglevel='debug')
+            player = mpv.MPV(vo='x11', log_handler=print, loglevel='debug', player_operation_mode='pseudo-gui')
             #player.play("file://"+script_path) # FAILS unrecognized file format (reason 4), even if config is set
             player.loadfile(script_path, demuxer_lavf_format='vapoursynth')
             player.wait_for_playback()
