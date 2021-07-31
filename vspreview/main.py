@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+
+#Benchmark python-mpv with vapoursynth support with misc backends 
+#Version : Berlin, Take my breath away (https://www.youtube.com/watch?v=fUis9yny_lI)
+#Author:  SoSie-js  
 
 import logging
 import os
@@ -58,19 +63,30 @@ def main() -> None:
     elif(backend=='pylibmpv') :
         import mpv
         import functools
-        import sys
         import pickle
+        
+        def score(loglevel, component, message):
+            score='[{}] {}: {}'.format(loglevel, component, message)
+            print(score)
+            scores.write(score+chr(13))
+
+        #Now the fun starts (I switched Topgun to Berlin to make the difference)
+        print("Berlin plays "+script_path)
+
         try:
-            #config=True,
-            player = mpv.MPV(vo='x11', log_handler=print, loglevel='debug', player_operation_mode='pseudo-gui')
-            #player.play("file://"+script_path) # FAILS unrecognized file format (reason 4), even if config is set
-            player.loadfile(script_path, demuxer_lavf_format='vapoursynth')
-            player.wait_for_playback()
+            with open('log_topgun.txt', 'a+') as scores:
+                scores.write("----- game starts with "+__file__+"---"+chr(13))
+                player = mpv.MPV(vo='x11', log_handler=score, loglevel='debug', player_operation_mode='pseudo-gui', input_default_bindings=True, input_vo_keyboard=True) #config=True,
+                #player.play("file://"+script_path) # FAILS unrecognized file format (reason 4), even if config is s
+                player.loadfile(script_path, demuxer_lavf_format='vapoursynth')
+                player.wait_for_playback()
+                scores.write("----- game over ---"+chr(13))
         except NameError as err:
             print("Name error: {0}".format(err))
         except: # catch *all* exceptions
             e = sys.exc_info()[0]
             logging.error( "<p>Player Error: %s</p>" % e )
+
     elif(backend=='pyvspipempv') :
         import mpv
         import subprocess
@@ -78,21 +94,17 @@ def main() -> None:
         player = mpv.MPV(config=True)
         @player.python_stream('foo')
         def reader():
-	        with open('log.txt', 'ab+') as out:
-		        p = subprocess.Popen(['/usr/bin/vspipe '+script_path+' -  --y4m' ], shell=True, stdout=subprocess.PIPE)
-		        std_out, std_error = p.communicate()
-	        # Write to the file
-	        if std_error:
-		        out.write( std_error )
-	        yield std_out
+            with open('log.txt', 'ab+') as out:
+                p = subprocess.Popen(['/usr/bin/vspipe '+script_path+' -  --y4m' ], shell=True, stdout=subprocess.PIPE)
+                std_out, std_error = p.communicate()
+                # Write to the file
+                if std_error:
+                   out.write( std_error )
+                yield std_out
 
         player.play('python://foo')
         player.wait_for_playback()
     print("Done")
-
-"""
-    
-"""
   
 
 def check_versions() -> bool:
