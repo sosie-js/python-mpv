@@ -1,0 +1,1 @@
+ffmpeg -loglevel fatal -hide_banner -f vapoursynth -i vpy_test2.vpy -nostdin -f yuv4mpegpipe -strict -1 -pix_fmt yuv420p - | mpv -

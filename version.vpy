@@ -5,7 +5,7 @@ from  vapoursynth import core
 import jsonplus as json
 
 #Python equivalent of package.path = package.path .. ";" ..script_dir.. rel_path
-def includepath(rel_path=""):
+"""def includepath(rel_path=""):
 		import os
 		# Import scripts folder 
 		script_dir = os.path.dirname(__file__)
@@ -13,9 +13,10 @@ def includepath(rel_path=""):
 		import sys
 		sys.path.append(os.path.abspath(dir))
 		
-includepath()
+includepath()"""
 from pprint import pprint
-import outputwindow		
+#import outputwindow		
+
 #print(core.version())
 width=800
 height=600
@@ -45,26 +46,7 @@ clip_infos = {
 clip=core.text.Text(clip, "Frame informations:"+chr(13)+chr(13)+"Video:"+chr(13)+str(clip.width)+"x"+str(clip.height),4,2)
 clip=core.text.Text(clip, json.dumps(clip_infos, indent=4),5,1)
 clip=core.text.Text(clip,"To play directly vapoursynth files,"+msg,1,2)
-try:
-  env = get_current_environment()
-  with env.use():
-    # Do stuff inside this env.
-    #pprint(env)
-    dummy=0
-    #import web_pdb; web_pdb.set_trace()
-except Exception:
-  try:	
-    env = vpy_current_environment()
-    with env.use():
-      # Do stuff inside this env.
-      #pprint(env)
-      dummy=0
-      #import web_pdb; web_pdb.set_trace()
-  except Exception:
-    env = globals()
-    #pprint(env)
-    dummy=0
-    #import web_pdb; web_pdb.set_trace()  
+
 import mvsfunc as mvf
 clip = mvf.ToYUV(clip,matrix = "709", css = "420", depth = 8) 
 #http://www.vapoursynth.com/doc/pythonreference.html#slicing-and-other-syntactic-sugar

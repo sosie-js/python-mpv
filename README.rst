@@ -1,7 +1,7 @@
 .. vim: tw=120 sw=4 et
 
-python-mpv-vapoursynth-preview
-=============================
+python-mpv-vapoursynth-preview (JJGoldman version)
+==================================================
 
 python-mpv-vapoursynth-preview is a ctypes-based python interface to the mpv media player. It gives you more or less full control of all
 features of the player, just as the lua interface does.
@@ -21,22 +21,30 @@ Then try different ways to render vapoursynth using mpv, version.vpy script serv
 and run.py as command wrapper for vsprewiew
 
 Most of the case it is equivalent to 
-    python3 run.py <backend> version.py
+    python3 run.py <backend> version.vpy
+
+I provided two helpers run and run-main doing the same thing, one will use vspreview other is a link to main.py 
+     run <backend> version.vpy
+     run-main <backend> version.vpy
 
 where <backend> is one of
 
 -shell based:
-*mpv      : wrapper script that allows vapoursynth to be recognized (quivalent to mpv --demuxer-lavf-format=vapoursynth version.vpy)
+*mpv      : wrapper script that allows vapoursynth to be recognized (equivalent to mpv --demuxer-lavf-format=vapoursynth version.vpy)
 *vspipe   : Feeded by vspipe (equivalent to vspipe version.vpy - --y4m | mpv --demuxer-lavf-format=vapoursynth -) 
+*ffmpeg2mpv; use internal demux lavf vapoursource format of ffmpeg to pipe it yo ffmpeg
 
 -python subprocess wrapped:
 *pympv    : add the required filter bridge to ffmpeg so mpv can render vpy nicefully (pythonic equivalent
 of backend mpv)
 
 -python libmpv wrapped:
-*pylibmpv    : renders nothing, blocks somewhere, bad boy
+*pylibmpv    : renders nothing, blocks somewhere, bad boy (crash)
 *pyvspipempv : combined with vspipe ,renders with libmpv (works!)
+*pyrawpipempv: hacky vapoursythn injection to mpv though a pipe (sucks, froze)
 
+-ffmpeg wrapped
+*pyffmpegvs2mpv : I DID NOT MANAGE TO REPRODUCE ffmpeg2mpv
 
 
 Requirements
