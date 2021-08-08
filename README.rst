@@ -33,6 +33,7 @@ where <backend> is one of
 *mpv      : wrapper script that allows vapoursynth to be recognized (equivalent to mpv --demuxer-lavf-format=vapoursynth version.vpy)
 *vspipe   : Feeded by vspipe (equivalent to vspipe version.vpy - --y4m | mpv --demuxer-lavf-format=vapoursynth -) 
 *ffmpeg2mpv; use internal demux lavf vapoursource format of ffmpeg to pipe it yo ffmpeg
+*opencv: a shotcut command to view sample vapoursynth script video of version.opencv.vpy in mpv
 
 -python subprocess wrapped:
 *pympv    : add the required filter bridge to ffmpeg so mpv can render vpy nicefully (pythonic equivalent
