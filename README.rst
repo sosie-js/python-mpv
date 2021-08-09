@@ -42,12 +42,15 @@ of backend mpv)
 
 -python libmpv wrapped:
 *pylibmpv    : renders nothing, blocks somewhere, bad boy (crash)
+*pyffmpegvs2libmpv :ffmpeg comes to rescue, working including seeking backward too, but buffering like hell
 *pyvspipempv : combined with vspipe ,renders with libmpv (works!)
 *pyrawpipempv: hacky vapoursythn injection to mpv though a pipe (sucks, froze)
 
 -ffmpeg wrapped
-*pyffmpegvs2mpv : I DID NOT MANAGE TO REPRODUCE ffmpeg2mpv
+*pyffmpegvs2mpv : Now it works including seeking backward too!!!!
 
+Extra outsider Avisynth+:
+*version_pyavs2yuvmpv; avisynthp+ using avs2yuv 3.0+
 
 Requirements
 ~~~~~~~~~~~~

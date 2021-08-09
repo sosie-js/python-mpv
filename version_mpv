@@ -2,7 +2,7 @@ script_path="version.vpy"
 
 if [[ $script_path == *.vpy ]] 
 then
-	mpv  --demuxer-lavf-format=vapoursynth $script_path
+	mpv  --demuxer-lavf-format=vapoursynth $script_path --input-ipc-server=/tmp/mpvsocket --msg-level=a=debug
 else
-	mpv $script_path
+	mpv $script_path --input-ipc-server=/tmp/mpvsocket --msg-level=a=debug
 fi

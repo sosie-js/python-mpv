@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 #Benchmark python-mpv with vapoursynth/avisynth+ support with misc backends 
-#Version : JJGoldmanPlus, Je marche seul  (https://www.youtube.com/watch?v=5AS0wPLnAhY)
+#Version : VapeurSauce 1.0
 #Author:  SoSie-js  
  
 import argparse
@@ -14,7 +14,7 @@ import sys
 
 import vapoursynth as     vs
 
-version='JJGoldmanPlus'
+version='VapeurSauce 1.0'
 
 def install_custom_log():
     logging.basicConfig(format='{asctime}: {levelname}: {message}',
@@ -36,6 +36,8 @@ def create_parser():
                         help='Arguments that will be passed to scripts')
   
     return parser
+
+from vspreview.backends.info import *
 
 def main():
     
@@ -61,210 +63,40 @@ def main():
     backend=str(args.backend)
     print(version+" use backend '"+backend + "' for playing '"+script_path+"'")
     
-    if(backend == 'pympv'): # -> Works
-
-        # this works but does not use mpv.py (libmpv from python)
-        import subprocess
-        temp_file = open("temp.txt",'w')
-        import shutil
-        mpv = shutil.which('mpv') #'/usr/local/bin/mpv'
-        proc=[]
-        proc.append('mpv')
-        if script_path.endswith('.vpy'):
-            proc.append('--demuxer-lavf-format=vapoursynth')
-        proc.append(script_path)
-        subprocess.call(proc, stdout=temp_file)
-        temp_file.close()
-        with open("temp.txt",'r') as file:
-           output = file.read()
-        print(output)
-
-    elif(backend == 'pyffmpegvs2mpv'): # -> How to run this?, i tried different ways but no success to repoduce the bash command that works...é_è
-
-        import subprocess
-        import shlex
-        import mpv
-        import shutil
-
-        ffmpeg = shutil.which('ffmpeg')
-        ffmpegvs=ffmpeg+' -loglevel fatal -hide_banner -f vapoursynth -i '+script_path+' -nostdin -f yuv4mpegpipe -strict -1 -pix_fmt yuv420p - '
-        temp_file = open("temp.txt",'w')
-        command= ffmpegvs +'| mpv -'  
-        print("Running "+command)
-        proc=shlex.split(command)
-        subprocess.call(proc,  shell=True, stdout=temp_file)
-        temp_file.close()
-        temp_file = open("temp.txt",'r')
-        print(temp_file.read())
-        temp_file.close()
-        """player = mpv.MPV(config=True)
-        @player.python_stream('foo')
-        def reader():
-            with open('log.txt', 'ab+') as out:
-                
-                proc = shlex.split(command)
-                
-                #command= ffmpegvs+'| mpv -'
-                #print("Running "+command)
-                '''proc=['ffmpeg']
-                proc.append('-loglevel')
-                proc.append('fatal')
-                proc.append('-hide_banner')
-                proc.append('-f')
-                proc.append('vapoursynth')
-                proc.append('-i')
-                proc.append(script_path)
-                proc.append('-nostdin')
-                proc.append('-f')
-                proc.append('yuv4mpegpipe')
-                proc.append('-strict')
-                proc.append('-1')
-                proc.append('-pix_fmt')
-                proc.append('yuv420p')
-                proc.append('-')
-                print(proc)
-                proc=['/usr/bin/ffmpeg', '-loglevel', 'fatal', '-hide_banner', '-f', 'vapoursynth', '-i', 'version.vpy', '-nostdin', '-f', 'yuv4mpegpipe', '-strict', '-1', '-pix_fmt', 'yuv420p', '-']
-                '''
-                p = subprocess.Popen(proc, shell=True, stdout=subprocess.PIPE)
-                std_out, std_error = p.communicate()
-                # Write to the file
-                if std_error:
-                   out.write( std_error )
-                   print(std_error)
-                yield std_out
-
-        player.play('python://foo')
-        player.wait_for_playback()"""
-    elif(backend=='pylibmpv') : # -> Sucks
-        import mpv
-        import functools
-        import pickle
+    if(backend == 'pympv'): # -> Works "<->" using -demuxer-lavf-format=vapoursynth of mpv
         
-        def score(loglevel, component, message):
-            score='[{}] {}: {}'.format(loglevel, component, message)
-            print(score)
-            scores.write(score+chr(13))
+        from vspreview.backends.pympv import pympv
+        pympv(script_path)
 
-        try:
-            with open('log_topgun.txt', 'a+') as scores:
-                scores.write("----- game starts with "+__file__+"---"+chr(13))
-                player = mpv.MPV(vo='x11', log_handler=score, loglevel='debug', player_operation_mode='pseudo-gui', input_default_bindings=True, input_vo_keyboard=True)
-                #scripts='debug.lua', script_opts='debug-scriptpath='+script_path) #config=True,
-                #player.play("file://"+script_path) # FAILS unrecognized file format (reason 4), even if config is s
-                player.loadfile(script_path, demuxer_lavf_format='vapoursynth')
-                #player.wait_for_playback()
-                scores.write("----- game over ---"+chr(13))
-        except NameError as err:
-            print("Name error: {0}".format(err))
-        except: # catch *all* exceptions
-            e = sys.exc_info()[0]
-            logging.error( "<p>Player Error: %s</p>" % e )
-    elif(backend=='pyrawpipempv') : #--> sucks
+    elif(backend == 'pyffmpegvs2mpv'): # Works "<->" using ffmpeg vapoursynth format through lav
 
-        import mpv
-        import functools
-        import pickle
-        from pprint import pprint
+       from vspreview.backends.pyffmpegvs2mpv import pyffmpegvs2mpv
+       pyffmpegvs2mpv(script_path) 
 
-        import json
+    elif(backend == 'pyffmpegvs2libmpv'): # Works "->" ,  using mpv.py (libmpv from python) but buffers like hell é_è
 
-        def _get_current_environment(init_env=''):
-            
-            import os
-            import shlex
-            import subprocess
+       from vspreview.backends.pyffmpegvs2libmpv import pyffmpegvs2libmpv
+       pyffmpegvs2libmpv(script_path) 
 
-            #https://qastack.fr/programming/3503719/emulating-bash-source-in-python
-            if(init_env):
-                command = shlex.split("env -i bash -c 'source "+init_env+" && env'")
-      
-                proc = subprocess.Popen(command, stdout = subprocess.PIPE)
-
-                #https://stackoverflow.com/questions/33054527/typeerror-a-bytes-like-object-is-required-not-str-when-writing-to-a-file-in
-                lines = [x.decode('utf8').strip() for x in proc.stdout.readlines()]
-
-                #for line in proc.stdout:
-                for line in lines:
-                  (key, _, value) = line.partition("=")
-                  os.environ[key] = value
-                proc.communicate()
-                #pprint(dict(os.environ))
-
-            env=dict(os.environ)
-            return env
-
-        env=None
-        #import web_pdb; web_pdb.set_trace() 
-        try:
-          env = get_current_environment()
-        except Exception:
-          try:	
-            env = vpy_current_environment()
-          except Exception:
-            env=_get_current_environment()
-            
-        print(json.dumps(env))
-
-
-        def score(loglevel, component, message):
-            score='[{}] {}: {}'.format(loglevel, component, message)
-            print(score)
-            scores.write(score+chr(13))
+    elif(backend=='pylibmpv') : # -> Sucks, instable play crazingly ,please use the py version to debug instead (Need help to fix!)
+    
+       from vspreview.backends.pylibmpv import pylibmpv
+       pylibmpv(script_path) 
+    
+    elif(backend=='pyrawpipempv') : #--> Sucks, black screen directly on mpv, terminal locked
         
-        with open('log_topgun.txt', 'a+') as scores:
-            player = mpv.MPV(vo='x11', log_handler=score, loglevel='debug', player_operation_mode='pseudo-gui', input_default_bindings=True, input_vo_keyboard=True)
-                    #scripts='debug.lua', script_opts='debug-scriptpath='+script_path)
-            @player.python_stream('vps-test')
-            def reader():
+        from vspreview.backends.pyrawpipempv import pyrawpipempv
+        pyrawpipempv(script_path)
 
-                with open(script_path, 'r') as out:
-                    rawvpy=out.read().encode()
-                with open('vsrawscript.txt', 'ab') as out:
-                    out.write(rawvpy)
-                yield rawvpy 
-
-            player.loadfile('python://vps-test', demuxer_lavf_format='vapoursynth')
-            player.wait_for_playback()
-            print("Done")
-    elif(backend=='pyvspipempv') : # -> Works, but can not go back in the stream, slower people said
-        import mpv
-        import subprocess
-        import shutil
-        vspipe = shutil.which('vspipe')
-
-        player = mpv.MPV(config=True)
-        @player.python_stream('foo')
-        def reader():
-            with open('log.txt', 'ab+') as out:
-                p = subprocess.Popen([vspipe+' '+script_path+' -  --y4m' ], shell=True, stdout=subprocess.PIPE)
-                std_out, std_error = p.communicate()
-                # Write to the file
-                if std_error:
-                   out.write( std_error )
-                yield std_out
-
-        player.play('python://foo')
-        player.wait_for_playback()
-        print("Done")
-    elif(backend=='pyavs2yuvmpv') :
-        import mpv
-        import subprocess
-        import shutil
-       #Requires Avs2YUV >= 0.30, see https://github.com/DJATOM/avs2yuv/issues/3
-        avs2yuv = shutil.which('avs2yuv')
-        player = mpv.MPV()
-        @player.python_stream('foo')
-        def reader():
-             with open('log.txt', 'ab+') as out:
-                p = subprocess.Popen([avs2yuv+' '+script_path+' -' ], shell=True, stdout=subprocess.PIPE)  
-                std_out, std_error = p.communicate()
-                # Write to the file
-                if std_error:
-                   out.write( std_error )
-                yield std_out
-        player.play('python://foo')
-        #--demuxer=rawvideo --demuxer-rawvideo-w=320 --demuxer-rawvideo-h=240 --demuxer-rawvideo-fps=29.970 --demuxer-rawvideo-mp-format=rgb32
-        player.wait_for_playback()
+    elif(backend=='pyvspipempv') : # -> Works, "->" , ie not go back in the stream, slower people said, buffering as well
+        from vspreview.backends.pyvspipempv import pyvspipempv
+        pyvspipempv(script_path)
+        
+    elif(backend=='pyavs2yuvmpv') : # Works "->" but no sound support is intended for future
+        
+        from vspreview.backends.pyavs2yuvmpv import pyavs2yuvmpv
+        pyavs2yuvmpv(script_path)
+   
     else:
         print("Unsupported backend")
 

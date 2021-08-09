@@ -24,7 +24,11 @@ clip=core.std.BlankClip(width=width,height=height,format=vs.YUV420P8)
 
 clip=core.text.FrameNum(clip,7,2)
 
+import numpy as np
+print(np.__version__)
 
+import cv2
+print(cv2.__version__)
 		
 clip=core.text.Text(clip,core.version(),9,2)
 msg="Add the two lines to ~/.config/mpv/config:"+chr(13)+"[extension.vpy]"+chr(13)+"demuxer-lavf-format=vapoursynth"

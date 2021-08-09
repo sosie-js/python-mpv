@@ -1,0 +1,8 @@
+script_path="version.avs"
+
+if [[ $script_path == *.avs ]] 
+then
+	avs2yuv version.avs - | mpv -
+else
+	echo "Support only avisyth+ (.avs) files"
+fi
