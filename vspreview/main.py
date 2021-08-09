@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-#Benchmark python-mpv with vapoursynth support with misc backends 
-#Version : JJGoldman, Je marche seul  (https://www.youtube.com/watch?v=5AS0wPLnAhY)
+#Benchmark python-mpv with vapoursynth/avisynth+ support with misc backends 
+#Version : JJGoldmanPlus, Je marche seul  (https://www.youtube.com/watch?v=5AS0wPLnAhY)
 #Author:  SoSie-js  
  
 import argparse
@@ -14,7 +14,7 @@ import sys
 
 import vapoursynth as     vs
 
-version='JJGoldman'
+version='JJGoldmanPlus'
 
 def install_custom_log():
     logging.basicConfig(format='{asctime}: {levelname}: {message}',
@@ -246,10 +246,27 @@ def main():
         player.play('python://foo')
         player.wait_for_playback()
         print("Done")
+    elif(backend=='pyavs2yuvmpv') :
+        import mpv
+        import subprocess
+        import shutil
+       #Requires Avs2YUV >= 0.30, see https://github.com/DJATOM/avs2yuv/issues/3
+        avs2yuv = shutil.which('avs2yuv')
+        player = mpv.MPV()
+        @player.python_stream('foo')
+        def reader():
+             with open('log.txt', 'ab+') as out:
+                p = subprocess.Popen([avs2yuv+' '+script_path+' -' ], shell=True, stdout=subprocess.PIPE)  
+                std_out, std_error = p.communicate()
+                # Write to the file
+                if std_error:
+                   out.write( std_error )
+                yield std_out
+        player.play('python://foo')
+        #--demuxer=rawvideo --demuxer-rawvideo-w=320 --demuxer-rawvideo-h=240 --demuxer-rawvideo-fps=29.970 --demuxer-rawvideo-mp-format=rgb32
+        player.wait_for_playback()
     else:
         print("Unsupported backend")
-   
-
 
 
 def check_versions() -> bool:
