@@ -1,9 +1,9 @@
 .. vim: tw=120 sw=4 et
 
-python-mpv-vapoursynth-preview (JJGoldman version)
-==================================================
+vapeursauce-preview 
+====================
 
-python-mpv-vapoursynth-preview is a ctypes-based python interface to the mpv media player. It gives you more or less full control of all
+This is the cooked replacement of python-mpv-vapoursynth-preview which is a ctypes-based python interface to the mpv media player. It gives you more or less full control of all
 features of the player, just as the lua interface does.
 IT IS AN ATTEMPT to add vapoursynth preview from python using mpv.
 
@@ -33,7 +33,8 @@ where <backend> is one of
 *mpv      : wrapper script that allows vapoursynth to be recognized (equivalent to mpv --demuxer-lavf-format=vapoursynth version.vpy)
 *vspipe   : Feeded by vspipe (equivalent to vspipe version.vpy - --y4m | mpv --demuxer-lavf-format=vapoursynth -) 
 *ffmpeg2mpv; use internal demux lavf vapoursource format of ffmpeg to pipe it yo ffmpeg
-*opencv: a shotcut command to view sample vapoursynth script video of version.opencv.vpy in mpv
+*opencv: a shotcut command to view sample vapoursynth script video of version.opencv.vpy in mpv (now the core 
+has been externalized as vs.preview.opencv and requires vs.preview.info to be imported as well
 
 -python subprocess wrapped:
 *pympv    : add the required filter bridge to ffmpeg so mpv can render vpy nicefully (pythonic equivalent
